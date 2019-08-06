@@ -15,15 +15,18 @@ public class FriendlyNinja extends GameObject {
 
     public FriendlyNinja(Context ctx, int screenX, int screenY) {
         super();
+        // TODO: Add enemy ninja graphic
         bitmap = BitmapFactory.decodeResource(
-                ctx.getResources(), R.drawable.friendly_run);
+                ctx.getResources(), R.drawable.friendly_single);
+        bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
+
         maxX = screenX;
         maxY = screenY / 2;
         minX = 0;
         speed = random.nextInt(10) + 10;
         x = screenX;
-        y = random.nextInt(maxY) - bitmap.getHeight();
-        hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
+        y = maxY;
+        hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
 
 //        manXPos = 0;
 //        frameWidth = 1190;
@@ -50,7 +53,7 @@ public class FriendlyNinja extends GameObject {
         if (x < minX - bitmap.getWidth()) {
             speed = random.nextInt(10) + 10;
             x = maxX;
-            y = maxY - bitmap.getHeight();
+            y = maxY;
         }
 
         /** Refresh hitbox location **/

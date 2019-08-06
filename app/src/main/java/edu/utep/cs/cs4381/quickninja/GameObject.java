@@ -2,6 +2,7 @@ package edu.utep.cs.cs4381.quickninja;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -45,6 +46,13 @@ public abstract class GameObject {
     }
 
     public Bitmap getBitmap() {  return bitmap; }
+
+    public void setBitmap(Context ctx, int id) {
+        bitmap = BitmapFactory.decodeResource(
+                ctx.getResources(), id);
+        bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
+
+    }
 
     public Rect getHitbox() { return hitBox; }
 

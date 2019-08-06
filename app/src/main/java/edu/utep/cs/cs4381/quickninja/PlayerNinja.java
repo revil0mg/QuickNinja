@@ -15,7 +15,7 @@ public class PlayerNinja extends GameObject{
     protected boolean isJumping;
     protected boolean isAttacking;
     private long jumpTime;
-    private long maxJumpTime = 700; // jump 7 10ths of second
+    private long maxJumpTime = 2000; // jump 7 10ths of second
     protected int speed;
     private int screenYRes;
 
@@ -23,6 +23,7 @@ public class PlayerNinja extends GameObject{
 
     public PlayerNinja(Context context, int screenX, int screenY) {
         super();
+
 
         screenYRes = screenY;
         maxY = screenY/2;
@@ -41,12 +42,15 @@ public class PlayerNinja extends GameObject{
             //TODO: Shrink player for other animations
 
             bitmap = BitmapFactory.decodeResource(
-                    context.getResources(), R.drawable.player_run);
-
+                    context.getResources(), R.drawable.player_single);
+            bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
 //            bitmap = Bitmap.createScaledBitmap(bitmap, frameWidth * frameCount, frameHeight, false);
         }
+        x = 0;
+        y = screenY / 2;
 
 //        /** Refresh hitbox location **/
+        hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
 //        hitBox = frameToDraw;
 //        whereToDraw.roundOut(hitBox);
     }
@@ -88,6 +92,7 @@ public class PlayerNinja extends GameObject{
             y = maxY;
         }
 
+        hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getWidth());
 //        whereToDraw.roundOut(hitBox);
 
     }

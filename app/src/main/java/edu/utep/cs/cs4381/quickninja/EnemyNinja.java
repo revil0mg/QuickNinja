@@ -18,14 +18,16 @@ public class EnemyNinja extends GameObject {
         super();
         // TODO: Add enemy ninja graphic
         bitmap = BitmapFactory.decodeResource(
-                ctx.getResources(), R.drawable.enemy_attack);
+                ctx.getResources(), R.drawable.enemy_single);
+        bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
+
         maxX = screenX;
         maxY = screenY / 2;
         minX = 0;
         speed = random.nextInt(10) + 10;
         x = screenX;
-        y = random.nextInt(maxY) - bitmap.getHeight();
-        hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
+        y = maxY;
+        hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
 
 //        runSpeedPerSecond = -3;
 //        manXPos = 0;
@@ -36,8 +38,8 @@ public class EnemyNinja extends GameObject {
     }
 
 
-    public void update(long fps, int playerSpeed) {
-        x -= playerSpeed;
+    public void update(long fps, int gameSpeed) {
+        x -= gameSpeed;
         x -= speed;
 
 //        /** Animation Stuff **/
@@ -51,15 +53,15 @@ public class EnemyNinja extends GameObject {
 //            manYPos = 10;
 //        }
 //
-//        /** Respawn when off screen **/
-//        if (x < minX - bitmap.getWidth()) {
-//            speed = random.nextInt(10)+15;
-//            x = maxX;
-//            y = maxY - bitmap.getHeight();
-//        }
-//
-//        /** Refresh hitbox location **/
-//        whereToDraw.roundOut(hitBox);
+        /** Respawn when off screen **/
+        if (x < minX - bitmap.getWidth()) {
+            speed = random.nextInt(10)+15;
+            x = maxX;
+            y = maxY;
+        }
+
+        /** Refresh hitbox location **/
+        hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
 
     }
     
