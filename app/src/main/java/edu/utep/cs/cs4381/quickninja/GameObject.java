@@ -14,14 +14,13 @@ public abstract class GameObject {
     protected Bitmap bitmap;
     protected Rect hitBox;
 
-    protected boolean isMoving = true;
-    protected float runSpeedPerSecond = 1000;
+    /** Animation Stuff **/
+    protected float runSpeedPerSecond = 0;
     protected float manXPos = 0, manYPos = 0;
-    protected int frameWidth = 1300, frameHeight = 1500;
-    protected int frameCount = 6;
+    protected int frameWidth = 1190, frameHeight = 1500;
+    protected int frameCount = 5;
     protected int currentFrame = 0;
-    protected long fps;
-    protected long timeThisFrame;
+
     protected long lastFrameChangeTime = 0;
     protected int frameLengthInMillisecond = 50;
 
@@ -44,17 +43,17 @@ public abstract class GameObject {
         yVelocity = yv;
     }
 
+    /** Animation Stuff **/
     public void manageCurrentFrame() {
         long time = System.currentTimeMillis();
-        if (isMoving) {
-            if (time > lastFrameChangeTime + frameLengthInMillisecond) {
-                lastFrameChangeTime = time;
-                currentFrame++;
-                if (currentFrame >= frameCount) {
-                    currentFrame = 0;
-                }
+        if (time > lastFrameChangeTime + frameLengthInMillisecond) {
+            lastFrameChangeTime = time;
+            currentFrame++;
+            if (currentFrame >= frameCount) {
+                currentFrame = 0;
             }
         }
+
         frameToDraw.left = currentFrame * frameWidth;
         frameToDraw.right = frameToDraw.left + frameWidth;
     }

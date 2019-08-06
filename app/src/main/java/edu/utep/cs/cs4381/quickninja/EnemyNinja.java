@@ -20,7 +20,7 @@ public class EnemyNinja extends GameObject {
         bitmap = BitmapFactory.decodeResource(
                 ctx.getResources(), R.drawable.enemy_attack);
         maxX = screenX;
-        maxY = screenY;
+        maxY = screenY / 2;
         minX = 0;
         speed = random.nextInt(10) + 10;
         x = screenX;
@@ -37,7 +37,7 @@ public class EnemyNinja extends GameObject {
         if (x < minX - bitmap.getWidth()) {
             speed = random.nextInt(10)+10;
             x = maxX;
-            y = random.nextInt(maxY) - bitmap.getHeight();
+            y = maxY - bitmap.getHeight();
         }
 
         /** Refresh hitbox location **/

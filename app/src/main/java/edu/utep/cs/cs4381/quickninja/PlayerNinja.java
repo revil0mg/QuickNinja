@@ -21,36 +21,25 @@ public class PlayerNinja extends GameObject{
 
         x = 50;
         y = screenY / 2 - bitmap.getHeight();
-
         speed = 1;
-
 
         maxY = screenY - bitmap.getHeight(); // Q: why?
 
-        // Set this object up to be animated
-        final int ANIMATION_FPS = 16;
-        final int ANIMATION_FRAME_COUNT = 5;
-
-//        setAnimFps(ANIMATION_FPS);
-//        setAnimFrameCount(ANIMATION_FRAME_COUNT);
-//        setAnimated(context, pixelsPerMeter, true);
-
         /** Refresh hitbox location **/
-        hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
+        hitBox = frameToDraw;
     }
 
 
     public void update(long fps, float gravity) {
 
-        if (isMoving) {
-            manXPos = manXPos + runSpeedPerSecond / fps;
-            if (manXPos > bitmap.getWidth()) {
-                manYPos += frameHeight;
-                manXPos = 10;
-            }
-            if (manYPos + frameHeight > bitmap.getHeight()) {
-                manYPos = 10;
-            }
+        /** Animation Stuff **/
+        manXPos = manXPos + runSpeedPerSecond / fps;
+        if (manXPos > bitmap.getWidth()) {
+            manYPos += frameHeight;
+            manXPos = 10;
+        }
+        if (manYPos + frameHeight > bitmap.getHeight()) {
+            manYPos = 10;
         }
 
         if (isJumping) {

@@ -124,12 +124,13 @@ public class GameView extends SurfaceView implements Runnable {
             paint.setAlpha(255); // Reset transparency
 
             /** Draw the Game Objects **/
-            //canvas.drawColor(Color.argb(255, 0, 0, 0));
+            // Animate Player
             player.whereToDraw.set((int) player.manXPos, (int) player.manYPos,
                     (int) player.manXPos + player.frameWidth, (int) player.manYPos + player.frameHeight);
             player.manageCurrentFrame();
             canvas.drawBitmap(player.getBitmap(), player.frameToDraw, player.whereToDraw, null);
 
+            // Draw Enemy Ninjas
             for (EnemyNinja enemy : enemyNinjas) {
                 canvas.drawBitmap(enemy.getBitmap(), enemy.getX(), enemy.getY(), paint);
             }
