@@ -61,6 +61,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     private Rect frameToDraw = new Rect(0, 0, frameWidth, frameHeight);
     private RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, frameHeight);
+    private int score;
 
     public GameView(Context context, int screenX, int screenY) {
         super(context);
@@ -103,6 +104,8 @@ public class GameView extends SurfaceView implements Runnable {
         /** Reset Time and Score **/
         enemiesDefeated = 0;
         timeTaken = 0;
+        score = 0;
+
 //
 //        timeStarted = System.currentTimeMillis();
         gameEnded = false;
@@ -118,7 +121,7 @@ public class GameView extends SurfaceView implements Runnable {
             control();
             timeThisFrame = System.currentTimeMillis() - startFrameTime;
             if (timeThisFrame >= 1) {
-                fps = 1000 / timeThisFrame;
+                fps = 1200 / timeThisFrame;
             }
         }
     }
@@ -189,10 +192,10 @@ public class GameView extends SurfaceView implements Runnable {
 
                 int yy = 50;
                 paint.setTextAlign(Paint.Align.LEFT);
-                canvas.drawText(formatTime("Farthest", hiScore), 10, yy, paint);
+                canvas.drawText(formatTime("Score", score), 10, yy, paint);
 
                 paint.setTextAlign(Paint.Align.CENTER);
-                canvas.drawText(formatTime("Time", timeTaken), screenWidth / 2, yy, paint);
+                canvas.drawText(formatTime("HighScore", hiScore), screenWidth / 2, yy, paint);
                 canvas.drawText("Distance: " + enemiesDefeated / 1000 + " KM", screenWidth / 2, screenHeight - yy, paint);
 
                 paint.setTextAlign(Paint.Align.RIGHT);
@@ -245,7 +248,7 @@ public class GameView extends SurfaceView implements Runnable {
         if (Rect.intersects(player.getHitbox(), enemyNinja.getHitbox())) {
             enemyNinja.update(fps, gameSpeed);
             hitDetected = true;
-            //enemyNinja.setBitmap(context, R.drawable.enemy_swing);
+            enemyNinja.setBitmap(context, R.drawable.enemy_single_swing);
         }
         else if (Rect.intersects(player.getHitbox(), enemyNinja.getHitbox())) {
             enemyNinja.setX(screenWidth);
@@ -258,11 +261,19 @@ public class GameView extends SurfaceView implements Runnable {
             //friendLyNinja.setBitmap(context, R.drawable.enemy_swing);
         }
 
+        /** Check Collision between Player Sword and Enemy Ninjas **/
+        if ((Rect.intersects(player.getAttackHitbox(), enemyNinja.getHitbox()))) {
+            score++;
+            enemyNinja.setX(screenWidth);
+            //friendLyNinja.setBitmap(context, R.drawable.enemy_swing);
+        }
 
         if (hitDetected && !gameEnded) {
             soundEffect.play(SoundEffect.Sound.BUMP);
             gameEnded = true;
-            //player.setBitmap(context, R.drawable.player_ded);
+            player.setBitmap(context, R.drawable.player_single_hit);
+            enemyNinja.setSpeed(0);
+            gameSpeed = 0;
             if (enemiesDefeated > hiScore) {
                 editor.putLong("hiScore", enemiesDefeated);
                 editor.commit();
@@ -273,7 +284,6 @@ public class GameView extends SurfaceView implements Runnable {
         player.update(fps, gameSpeed);
         enemyNinja.update(fps, gameSpeed);
         friendlyNinja.update(fps, gameSpeed);
-
 
 
     }
@@ -314,16 +324,16 @@ public class GameView extends SurfaceView implements Runnable {
                 }
 
                 /** Tap left side of screen to jump **/
-                if (x < screenWidth / 2 && y > 140 && !player.isJumping) {
+                if (x <= screenWidth / 2 && y > 140) {
                     //TODO: Add Player Jump Logic
                     player.jump();
                 }
 
                 /** Tap right side of screen to attack **/
-                if (x > screenWidth / 2 && y > 140) {
+                if (x >= screenWidth / 2 && y > 140) {
                     //TODO: Add Attack Logic
                     soundEffect.play(SoundEffect.Sound.BUMP);
-                    //player.attack
+                    player.attack(context);
                 }
 
                 /** Restart Game **/
@@ -341,7 +351,7 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void control(){
         try {
-            gameThread.sleep(17); // in milliseconds
+            gameThread.sleep(8); // in milliseconds
         } catch (InterruptedException e) {
         }
     }

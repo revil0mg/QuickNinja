@@ -61,7 +61,7 @@ public class EnemyNinja extends GameObject {
         }
 
         /** Refresh hitbox location **/
-        hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
+        hitBox = new Rect(x, y - 100, x + bitmap.getWidth(), y + bitmap.getHeight());
 
     }
     
@@ -72,4 +72,7 @@ public class EnemyNinja extends GameObject {
         return bitmap.getWidth();
     }
 
+    public void setSpeed(int sp) {
+        speed = sp;
+    }
 }
