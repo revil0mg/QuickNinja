@@ -1,6 +1,7 @@
 package edu.utep.cs.cs4381.quickninja;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
@@ -9,6 +10,7 @@ public class PlayerNinja extends GameObject{
 
     protected boolean isFalling;
     protected boolean isJumping;
+    protected boolean isAttacking;
     private long jumpTime;
     private long maxJumpTime = 700; // jump 7 10ths of second
     protected int speed;
@@ -24,6 +26,17 @@ public class PlayerNinja extends GameObject{
         speed = 1;
 
         maxY = screenY - bitmap.getHeight(); // Q: why?
+        if (isJumping) {
+            bitmap = BitmapFactory.decodeResource(
+                    context.getResources(), R.drawable.player_jump);
+        }
+        else {
+            runSpeedPerSecond = 0;
+            manXPos = 0;
+            frameWidth = 1190;
+            frameHeight = 1500;
+            frameCount = 5;
+        }
 
         /** Refresh hitbox location **/
         hitBox = frameToDraw;
@@ -65,8 +78,15 @@ public class PlayerNinja extends GameObject{
             y = maxY;
         }
 
-        hitBox.set(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
+        hitBox.set(x, y, x +frameWidth, y + frameHeight);
 
     }
 
+    public void jump() {
+        isJumping = true;
+    }
+
+    public void attack() {
+        isAttacking = true;
+    }
 }

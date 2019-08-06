@@ -5,11 +5,10 @@ import android.media.SoundPool;
 
 public class SoundEffect {
     public enum Sound {
-        SHOOT(R.raw.shoot);
-//        START(R.raw.start),
-//        BUMP(R.raw.bump),
-//        DESTROYED(R.raw.destroyed),
-//        WIN(R.raw.win);
+        BUMP(R.raw.player_burn),
+        HIT(R.raw.hit_guard),
+        JUMP(R.raw.jump),
+        RESTART(R.raw.teleport);
 
         public final int resourceId;
         private int soundId;

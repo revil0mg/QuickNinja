@@ -15,10 +15,10 @@ public abstract class GameObject {
     protected Rect hitBox;
 
     /** Animation Stuff **/
-    protected float runSpeedPerSecond = 0;
+    protected float runSpeedPerSecond;
     protected float manXPos = 0, manYPos = 0;
-    protected int frameWidth = 1190, frameHeight = 1500;
-    protected int frameCount = 5;
+    protected int frameWidth, frameHeight;
+    protected int frameCount;
     protected int currentFrame = 0;
 
     protected long lastFrameChangeTime = 0;

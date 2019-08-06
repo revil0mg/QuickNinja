@@ -83,7 +83,7 @@ public class GameView extends SurfaceView implements Runnable {
 //        }
 
         /** Reset Time and Distance **/
-        enemiesDefeated = 0; // 10 km
+        enemiesDefeated = 0;
         timeTaken = 0;
 //
 //        timeStarted = System.currentTimeMillis();
@@ -132,7 +132,18 @@ public class GameView extends SurfaceView implements Runnable {
 
             // Draw Enemy Ninjas
             for (EnemyNinja enemy : enemyNinjas) {
-                canvas.drawBitmap(enemy.getBitmap(), enemy.getX(), enemy.getY(), paint);
+                enemy.whereToDraw.set((int) enemy.manXPos, (int) enemy.manYPos,
+                        (int) enemy.manXPos + enemy.frameWidth, (int) enemy.manYPos + enemy.frameHeight);
+                enemy.manageCurrentFrame();
+                canvas.drawBitmap(enemy.getBitmap(), enemy.frameToDraw, enemy.whereToDraw, null);
+            }
+
+            // Draw Enemy Ninjas
+            for (FriendlyNinja friend : friendlyNinjas) {
+                friend.whereToDraw.set((int) friend.manXPos, (int) friend.manYPos,
+                        (int) friend.manXPos + friend.frameWidth, (int) friend.manYPos + friend.frameHeight);
+                friend.manageCurrentFrame();
+                canvas.drawBitmap(friend.getBitmap(), friend.frameToDraw, friend.whereToDraw, null);
             }
 //
 //            for (SpaceDust sd : dusts) {
@@ -201,46 +212,44 @@ public class GameView extends SurfaceView implements Runnable {
 
         /** Check Collision between Player and enemy ninjas **/
         for (EnemyNinja enemy : enemyNinjas) {
-            if (Rect.intersects(player.getHitbox(), enemy.getHitbox())) {
-                //ship.update(player.getSpeed());
+            if (Rect.intersects(player.getHitbox(), enemy.getHitbox()) && !player.isAttacking) {
+                enemy.update(fps, gameSpeed);
                 hitDetected = true;
-                //ship.setX(-ship.width());
+                enemy.setX(-enemy.width());
+            }
+            else if (Rect.intersects(player.getHitbox(), enemy.getHitbox()) && player.isAttacking) {
+                enemy.setX(screenWidth);
+                enemiesDefeated++;
             }
         }
 
-        if (hitDetected) {
-            //soundEffect.play(SoundEffect.Sound.BUMP);
+        /** Check Collision between Player and enemy ninjas **/
+        for (FriendlyNinja friend : friendlyNinjas) {
+            if ((Rect.intersects(player.getHitbox(), friend.getHitbox()))) {
+                hitDetected = true;
+            }
+        }
+
+        if (hitDetected && !gameEnded) {
+            soundEffect.play(SoundEffect.Sound.BUMP);
             gameEnded = true;
+            if (enemiesDefeated > hiScore) {
+                editor.putLong("hiScore", enemiesDefeated);
+                editor.commit();
+                hiScore = enemiesDefeated;
+            }
         }
 
         player.update(fps, gameSpeed);
 
         for (EnemyNinja enemy : enemyNinjas) {
-            enemy.update(gameSpeed);
+            enemy.update(fps, gameSpeed);
         }
 
-//        for (SpaceDust sd : dusts) {
-//            sd.update(player.getSpeed());
-//        }
+        for (FriendlyNinja friend : friendlyNinjas) {
+            friend.update(fps, gameSpeed);
+        }
 
-//        friendShip.update(player.getSpeed());
-
-//        if (!gameEnded) {
-//            distanceRemaining -= player.getSpeed();
-//            timeTaken = System.currentTimeMillis() - timeStarted;
-//        }
-//        if (distanceRemaining < 0) {
-//            soundEffect.play(SoundEffect.Sound.WIN);
-//            if (timeTaken < fastestTime) {
-//                soundEffect.play(SoundEffect.Sound.DESTROYED);
-//                // Save high score
-//                editor.putLong("fastestTime", timeTaken);
-//                editor.commit();
-//                fastestTime = timeTaken;
-//            }
-//            distanceRemaining = 0;
-//            gameEnded = true;
-//        }
 
     }
 
@@ -264,12 +273,12 @@ public class GameView extends SurfaceView implements Runnable {
 
                 /** Tap left side of screen to jump **/
                 if (x < screenWidth / 2 && y > 140 && !player.isJumping) {
-
+                    player.jump();
                 }
 
                 /** Tap right side of screen to attack **/
                 if (x > screenWidth / 2 && y > 140) {
-
+                    player.attack();
                 }
 
                 /** Restart Game **/
