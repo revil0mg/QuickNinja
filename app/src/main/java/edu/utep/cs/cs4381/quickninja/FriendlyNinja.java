@@ -25,10 +25,10 @@ public class FriendlyNinja extends GameObject {
         y = random.nextInt(maxY) - bitmap.getHeight();
         hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
 
-        manXPos = 0;
-        frameWidth = 1190;
-        frameHeight = 1500;
-        frameCount = 5;
+//        manXPos = 0;
+//        frameWidth = 1190;
+//        frameHeight = 1500;
+//        frameCount = 5;
     }
 
 
@@ -36,15 +36,15 @@ public class FriendlyNinja extends GameObject {
         x -= playerSpeed;
         x -= speed;
 
-        /** Animation Stuff **/
-        manXPos = manXPos + runSpeedPerSecond / fps;
-        if (manXPos > bitmap.getWidth()) {
-            manYPos += frameHeight;
-            manXPos = 10;
-        }
-        if (manYPos + frameHeight > bitmap.getHeight()) {
-            manYPos = 10;
-        }
+//        /** Animation Stuff **/
+//        manXPos = manXPos + runSpeedPerSecond / fps;
+//        if (manXPos > bitmap.getWidth()) {
+//            manYPos += frameHeight;
+//            manXPos = 10;
+//        }
+//        if (manYPos + frameHeight > bitmap.getHeight()) {
+//            manYPos = 10;
+//        }
 
         /** Respawn when off screen **/
         if (x < minX - bitmap.getWidth()) {
@@ -54,7 +54,7 @@ public class FriendlyNinja extends GameObject {
         }
 
         /** Refresh hitbox location **/
-        whereToDraw.roundOut(hitBox);
+//        whereToDraw.roundOut(hitBox);
 
     }
 

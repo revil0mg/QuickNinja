@@ -27,12 +27,12 @@ public class EnemyNinja extends GameObject {
         y = random.nextInt(maxY) - bitmap.getHeight();
         hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
 
-        runSpeedPerSecond = -3;
-        manXPos = 0;
-        manYPos = screenY / 2;
-        frameWidth = 1190;
-        frameHeight = 1500;
-        frameCount = 5;
+//        runSpeedPerSecond = -3;
+//        manXPos = 0;
+//        manYPos = screenY / 2;
+//        frameWidth = 1190;
+//        frameHeight = 1500;
+//        frameCount = 5;
     }
 
 
@@ -40,25 +40,26 @@ public class EnemyNinja extends GameObject {
         x -= playerSpeed;
         x -= speed;
 
-        /** Animation Stuff **/
-        manXPos = manXPos + runSpeedPerSecond / fps;
-        if (manXPos > bitmap.getWidth()) {
-            manYPos += frameHeight;
-            manXPos = 10;
-        }
-        if (manYPos + frameHeight > bitmap.getHeight()) {
-            manYPos = 10;
-        }
-
-        /** Respawn when off screen **/
-        if (x < minX - bitmap.getWidth()) {
-            speed = random.nextInt(10)+15;
-            x = maxX;
-            y = maxY - bitmap.getHeight();
-        }
-
-        /** Refresh hitbox location **/
-        whereToDraw.roundOut(hitBox);
+//        /** Animation Stuff **/
+//        manXPos = manXPos + runSpeedPerSecond / fps;
+//        manYPos = 1196;
+//        if (manXPos > bitmap.getWidth()) {
+//            manYPos += frameHeight;
+//            manXPos = 10;
+//        }
+//        if (manYPos + frameHeight > bitmap.getHeight()) {
+//            manYPos = 10;
+//        }
+//
+//        /** Respawn when off screen **/
+//        if (x < minX - bitmap.getWidth()) {
+//            speed = random.nextInt(10)+15;
+//            x = maxX;
+//            y = maxY - bitmap.getHeight();
+//        }
+//
+//        /** Refresh hitbox location **/
+//        whereToDraw.roundOut(hitBox);
 
     }
     

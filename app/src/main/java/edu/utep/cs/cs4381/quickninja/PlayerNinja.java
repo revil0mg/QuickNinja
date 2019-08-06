@@ -19,9 +19,10 @@ public class PlayerNinja extends GameObject{
     protected int speed;
     private int screenYRes;
 
+
+
     public PlayerNinja(Context context, int screenX, int screenY) {
         super();
-
 
         screenYRes = screenY;
         maxY = screenY/2;
@@ -38,34 +39,31 @@ public class PlayerNinja extends GameObject{
         }
         else {
             //TODO: Shrink player for other animations
+
             bitmap = BitmapFactory.decodeResource(
                     context.getResources(), R.drawable.player_run);
-            manXPos = 0;
-            manYPos = 500;
-//            manYPos = (float) screenY/2;
-            frameWidth = bitmap.getWidth()/6 + 8;
-            frameHeight = bitmap.getHeight();
-            frameCount = 5;
+
+//            bitmap = Bitmap.createScaledBitmap(bitmap, frameWidth * frameCount, frameHeight, false);
         }
 
-        /** Refresh hitbox location **/
-        hitBox = frameToDraw;
-        whereToDraw.roundOut(hitBox);
+//        /** Refresh hitbox location **/
+//        hitBox = frameToDraw;
+//        whereToDraw.roundOut(hitBox);
     }
 
 
     public void update(long fps, float gravity) {
 
-        /** Animation Stuff **/
-        manXPos = manXPos + runSpeedPerSecond / fps;
-        if (manXPos > bitmap.getWidth()) {
-//            manYPos += frameHeight;
-            manXPos = 10;
-        }
-        if (manYPos + frameHeight > bitmap.getHeight()) {
-//            manYPos = (float) screenYRes / 2;
-            manXPos = 0;
-        }
+//        /** Animation Stuff **/
+//        manXPos = manXPos + runSpeedPerSecond / fps;
+//        if (manXPos > bitmap.getWidth()) {
+////            manYPos += frameHeight;
+//            manXPos = 10;
+//        }
+//        if (manYPos + frameHeight > bitmap.getHeight()) {
+////            manYPos = (float) screenYRes / 2;
+//            manXPos = 0;
+//        }
 
         if (isJumping) {
             long timeJumping = System.currentTimeMillis() - jumpTime;
@@ -90,7 +88,7 @@ public class PlayerNinja extends GameObject{
             y = maxY;
         }
 
-        whereToDraw.roundOut(hitBox);
+//        whereToDraw.roundOut(hitBox);
 
     }
 

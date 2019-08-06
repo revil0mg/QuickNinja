@@ -14,18 +14,31 @@ public abstract class GameObject {
     protected Bitmap bitmap;
     protected Rect hitBox;
 
-    /** Animation Stuff **/
-    protected float runSpeedPerSecond;
-    protected float manXPos, manYPos;
-    protected int frameWidth, frameHeight;
-    protected int frameCount;
-    protected int currentFrame = 0;
+    private Bitmap bitmapRunningMan;
+    private boolean isMoving;
+    private float runSpeedPerSecond = 500;
+    private float manXPos = 1196, manYPos = 1196;
+    private int frameWidth = 230, frameHeight = 274;
+    private int frameCount = 8;
+    private int currentFrame = 0;
+    private long lastFrameChangeTime = 0;
+    private int frameLengthInMillisecond = 50;
 
-    protected long lastFrameChangeTime = 0;
-    protected int frameLengthInMillisecond = 50;
+    private Rect frameToDraw = new Rect(0, 0, frameWidth, frameHeight);
+    private RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, frameHeight);
 
-    protected Rect frameToDraw = new Rect(0, (int) manYPos, frameWidth, frameHeight);
-    protected RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, manYPos + frameHeight);
+//    /** Animation Stuff **/
+//    protected float runSpeedPerSecond = 250;
+//    protected float manXPos, manYPos = 1196;
+//    protected int frameWidth, frameHeight;
+//    protected int frameCount;
+//    protected int currentFrame = 0;
+//
+//    protected long lastFrameChangeTime = 10;
+//    protected int frameLengthInMillisecond = 50;
+//
+//    protected Rect frameToDraw = new Rect(0, (int) manYPos, frameWidth, frameHeight);
+//    protected RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, manYPos + frameHeight);
 
     public GameObject() {
         minY = 0;
@@ -43,27 +56,20 @@ public abstract class GameObject {
         yVelocity = yv;
     }
 
-    protected void setXPos(float x) {
-        manXPos = x;
-    }
 
-    protected void setYPos(float y) {
-        manYPos = y;
-    }
-
-    /** Animation Stuff **/
-    public void manageCurrentFrame() {
-        long time = System.currentTimeMillis();
-        if (time > lastFrameChangeTime + frameLengthInMillisecond) {
-            lastFrameChangeTime = time;
-            currentFrame++;
-            if (currentFrame >= frameCount) {
-                currentFrame = 0;
-            }
-        }
-
-        frameToDraw.left = currentFrame * frameWidth;
-        frameToDraw.right = frameToDraw.left + frameWidth;
-    }
+//    /** Animation Stuff **/
+//    public void manageCurrentFrame() {
+//        long time = System.currentTimeMillis();
+//        if (time > lastFrameChangeTime + frameLengthInMillisecond) {
+//            lastFrameChangeTime = time;
+//            currentFrame++;
+//            if (currentFrame >= frameCount) {
+//                currentFrame = 0;
+//            }
+//        }
+//
+//        frameToDraw.left = currentFrame * frameWidth;
+//        frameToDraw.right = frameToDraw.left + frameWidth;
+//    }
 
 }

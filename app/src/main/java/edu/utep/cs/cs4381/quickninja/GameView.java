@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -49,6 +50,18 @@ public class GameView extends SurfaceView implements Runnable {
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
+    private Bitmap playerBitmap;
+    private float runSpeedPerSecond = 500;
+    private float manXPos = 0, manYPos = 1196;
+    private int frameWidth = 275, frameHeight = 450;
+    private int frameCount = 5;
+    private int currentFrame = 0;
+    private long lastFrameChangeTime = 0;
+    private int frameLengthInMillisecond = 13;
+
+    private Rect frameToDraw = new Rect(0, 0, frameWidth, frameHeight);
+    private RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, frameHeight);
+
     public GameView(Context context, int screenX, int screenY) {
         super(context);
         holder = getHolder();
@@ -75,6 +88,10 @@ public class GameView extends SurfaceView implements Runnable {
     private void startGame () {
         /** Initialize Game Objects **/
         player = new PlayerNinja(context, screenWidth, screenHeight);
+
+        playerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_run);
+        playerBitmap = Bitmap.createScaledBitmap(playerBitmap, frameWidth * frameCount, frameHeight, false);
+
         enemyNinjas.clear();
 
         enemyNinjas.add(new EnemyNinja(context, screenWidth, screenHeight));
@@ -126,35 +143,36 @@ public class GameView extends SurfaceView implements Runnable {
 
             /** Draw the Game Objects **/
             // Animate Player
-            player.setXPos(10);
-            player.setYPos(600);
-            player.whereToDraw.set((int) player.manXPos, (int) player.manYPos,
-                    (int) player.manXPos + player.frameWidth, (int) player.manYPos + player.frameHeight);
-            player.manageCurrentFrame();
-            canvas.drawBitmap(player.getBitmap(), player.frameToDraw, player.whereToDraw, null);
-            Log.e("---------", String.valueOf(player.whereToDraw.top));
-            Log.e("---------", String.valueOf(player.whereToDraw.left));
+//            player.whereToDraw.set((int) player.manXPos, (int) player.manYPos,
+//                    (int) player.manXPos + player.frameWidth, (int) player.manYPos + player.frameHeight);
+//            player.manageCurrentFrame();
+//            canvas.drawBitmap(player.getBitmap(), player.frameToDraw, player.whereToDraw, null);
+//            Log.e("---------", String.valueOf(player.whereToDraw.top));
+//            Log.e("---------", String.valueOf(player.whereToDraw.left));
+            whereToDraw.set((int) manXPos, (int) manYPos, (int) manXPos + frameWidth, (int) manYPos + frameHeight);
+            manageCurrentFrame();
+            canvas.drawBitmap(playerBitmap, frameToDraw, whereToDraw, null);
 
 
 
             paint.setStyle(Paint.Style.STROKE);
-            canvas.drawRect(player.getHitbox(), paint);
+            canvas.drawRect(frameToDraw, paint);
 
             // Draw Enemy Ninjas
-            for (EnemyNinja enemy : enemyNinjas) {
-                enemy.whereToDraw.set((int) enemy.manXPos, (int) enemy.manYPos,
-                        (int) enemy.manXPos + enemy.frameWidth, (int) enemy.manYPos + enemy.frameHeight);
-                enemy.manageCurrentFrame();
-                canvas.drawBitmap(enemy.getBitmap(), enemy.frameToDraw, enemy.whereToDraw, null);
-            }
-
-            // Draw Friendly Ninjas
-            for (FriendlyNinja friend : friendlyNinjas) {
-                friend.whereToDraw.set((int) friend.manXPos, (int) friend.manYPos,
-                        (int) friend.manXPos + friend.frameWidth, (int) friend.manYPos + friend.frameHeight);
-                friend.manageCurrentFrame();
-                canvas.drawBitmap(friend.getBitmap(), friend.frameToDraw, friend.whereToDraw, null);
-            }
+//            for (EnemyNinja enemy : enemyNinjas) {
+//                enemy.whereToDraw.set((int) enemy.manXPos, (int) enemy.manYPos,
+//                        (int) enemy.manXPos + enemy.frameWidth, (int) enemy.manYPos + enemy.frameHeight);
+//                enemy.manageCurrentFrame();
+//                canvas.drawBitmap(enemy.getBitmap(), enemy.frameToDraw, enemy.whereToDraw, null);
+//            }
+//
+//            // Draw Friendly Ninjas
+//            for (FriendlyNinja friend : friendlyNinjas) {
+//                friend.whereToDraw.set((int) friend.manXPos, (int) friend.manYPos,
+//                        (int) friend.manXPos + friend.frameWidth, (int) friend.manYPos + friend.frameHeight);
+//                friend.manageCurrentFrame();
+//                canvas.drawBitmap(friend.getBitmap(), friend.frameToDraw, friend.whereToDraw, null);
+//            }
 //
 //            for (SpaceDust sd : dusts) {
 //                canvas.drawPoint(sd.getX(), sd.getY(), paint);
@@ -221,25 +239,25 @@ public class GameView extends SurfaceView implements Runnable {
         boolean friendlyHitDetected = false;
 
 
-        /** Check Collision between Player and enemy ninjas **/
-        for (EnemyNinja enemy : enemyNinjas) {
-            if (Rect.intersects(player.getHitbox(), enemy.getHitbox())) {
-                enemy.update(fps, gameSpeed);
-                hitDetected = true;
-                enemy.setX(-enemy.width());
-            }
-            else if (Rect.intersects(player.getHitbox(), enemy.getHitbox())) {
-                enemy.setX(screenWidth);
-                enemiesDefeated++;
-            }
-        }
-
-        /** Check Collision between Player and enemy ninjas **/
-        for (FriendlyNinja friend : friendlyNinjas) {
-            if ((Rect.intersects(player.getHitbox(), friend.getHitbox()))) {
-                hitDetected = true;
-            }
-        }
+//        /** Check Collision between Player and enemy ninjas **/
+//        for (EnemyNinja enemy : enemyNinjas) {
+//            if (Rect.intersects(player.getHitbox(), enemy.getHitbox())) {
+//                enemy.update(fps, gameSpeed);
+//                hitDetected = true;
+//                enemy.setX(-enemy.width());
+//            }
+//            else if (Rect.intersects(player.getHitbox(), enemy.getHitbox())) {
+//                enemy.setX(screenWidth);
+//                enemiesDefeated++;
+//            }
+//        }
+//
+//        /** Check Collision between Player and enemy ninjas **/
+//        for (FriendlyNinja friend : friendlyNinjas) {
+//            if ((Rect.intersects(player.getHitbox(), friend.getHitbox()))) {
+//                hitDetected = true;
+//            }
+//        }
 
         if (hitDetected && !gameEnded) {
             soundEffect.play(SoundEffect.Sound.BUMP);
@@ -262,6 +280,21 @@ public class GameView extends SurfaceView implements Runnable {
         }
 
 
+    }
+
+    public void manageCurrentFrame() {
+        long time = System.currentTimeMillis();
+
+        if (time > lastFrameChangeTime + frameLengthInMillisecond) {
+            lastFrameChangeTime = time;
+            currentFrame++;
+            if (currentFrame >= frameCount) {
+                currentFrame = 0;
+            }
+        }
+
+        frameToDraw.left = currentFrame * frameWidth;
+        frameToDraw.right = frameToDraw.left + frameWidth;
     }
 
     @Override
