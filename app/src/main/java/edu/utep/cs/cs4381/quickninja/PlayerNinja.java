@@ -3,7 +3,10 @@ package edu.utep.cs.cs4381.quickninja;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Movie;
 import android.graphics.Rect;
+
+import java.io.InputStream;
 
 public class PlayerNinja extends GameObject{
     private static final int GRAVITY = -12;
@@ -14,32 +17,40 @@ public class PlayerNinja extends GameObject{
     private long jumpTime;
     private long maxJumpTime = 700; // jump 7 10ths of second
     protected int speed;
+    private int screenYRes;
 
     public PlayerNinja(Context context, int screenX, int screenY) {
         super();
 
-        bitmap = BitmapFactory.decodeResource(
-                context.getResources(), R.drawable.player_run);
 
-        x = 50;
-        y = screenY / 2 - bitmap.getHeight();
-        speed = 1;
+        screenYRes = screenY;
+        maxY = screenY/2;
 
-        maxY = screenY - bitmap.getHeight(); // Q: why?
         if (isJumping) {
             bitmap = BitmapFactory.decodeResource(
                     context.getResources(), R.drawable.player_jump);
+            //TODO: Add Jumping animation
+        }
+        else if (isAttacking) {
+            bitmap = BitmapFactory.decodeResource(
+                    context.getResources(), R.drawable.player_attack);
+            //TODO: Add attacking animation
         }
         else {
-            runSpeedPerSecond = 0;
+            //TODO: Shrink player for other animations
+            bitmap = BitmapFactory.decodeResource(
+                    context.getResources(), R.drawable.player_run);
             manXPos = 0;
-            frameWidth = 1190;
-            frameHeight = 1500;
+            manYPos = 500;
+//            manYPos = (float) screenY/2;
+            frameWidth = bitmap.getWidth()/6 + 8;
+            frameHeight = bitmap.getHeight();
             frameCount = 5;
         }
 
         /** Refresh hitbox location **/
-        hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
+        hitBox = frameToDraw;
+        whereToDraw.roundOut(hitBox);
     }
 
 
@@ -48,11 +59,12 @@ public class PlayerNinja extends GameObject{
         /** Animation Stuff **/
         manXPos = manXPos + runSpeedPerSecond / fps;
         if (manXPos > bitmap.getWidth()) {
-            manYPos += frameHeight;
+//            manYPos += frameHeight;
             manXPos = 10;
         }
         if (manYPos + frameHeight > bitmap.getHeight()) {
-            manYPos = 10;
+//            manYPos = (float) screenYRes / 2;
+            manXPos = 0;
         }
 
         if (isJumping) {

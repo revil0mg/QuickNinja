@@ -16,7 +16,7 @@ public abstract class GameObject {
 
     /** Animation Stuff **/
     protected float runSpeedPerSecond;
-    protected float manXPos = 0, manYPos = 0;
+    protected float manXPos, manYPos;
     protected int frameWidth, frameHeight;
     protected int frameCount;
     protected int currentFrame = 0;
@@ -24,11 +24,11 @@ public abstract class GameObject {
     protected long lastFrameChangeTime = 0;
     protected int frameLengthInMillisecond = 50;
 
-    protected Rect frameToDraw = new Rect(0, 0, frameWidth, frameHeight);
-    protected RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, frameHeight);
+    protected Rect frameToDraw = new Rect(0, (int) manYPos, frameWidth, frameHeight);
+    protected RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, manYPos + frameHeight);
 
     public GameObject() {
-        //minY = 0;
+        minY = 0;
     }
 
     public Bitmap getBitmap() {  return bitmap; }
@@ -41,6 +41,14 @@ public abstract class GameObject {
 
     protected void setyVelocity(float yv) {
         yVelocity = yv;
+    }
+
+    protected void setXPos(float x) {
+        manXPos = x;
+    }
+
+    protected void setYPos(float y) {
+        manYPos = y;
     }
 
     /** Animation Stuff **/

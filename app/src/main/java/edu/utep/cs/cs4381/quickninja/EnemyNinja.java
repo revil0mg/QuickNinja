@@ -29,6 +29,7 @@ public class EnemyNinja extends GameObject {
 
         runSpeedPerSecond = -3;
         manXPos = 0;
+        manYPos = screenY / 2;
         frameWidth = 1190;
         frameHeight = 1500;
         frameCount = 5;

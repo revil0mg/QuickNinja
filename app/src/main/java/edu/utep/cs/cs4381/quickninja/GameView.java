@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -82,7 +83,7 @@ public class GameView extends SurfaceView implements Runnable {
 //            dusts.add(new SpaceDust(screenWidth, screenHeight));
 //        }
 
-        /** Reset Time and Distance **/
+        /** Reset Time and Score **/
         enemiesDefeated = 0;
         timeTaken = 0;
 //
@@ -125,11 +126,18 @@ public class GameView extends SurfaceView implements Runnable {
 
             /** Draw the Game Objects **/
             // Animate Player
+            player.setXPos(10);
+            player.setYPos(600);
             player.whereToDraw.set((int) player.manXPos, (int) player.manYPos,
                     (int) player.manXPos + player.frameWidth, (int) player.manYPos + player.frameHeight);
             player.manageCurrentFrame();
             canvas.drawBitmap(player.getBitmap(), player.frameToDraw, player.whereToDraw, null);
+            Log.e("---------", String.valueOf(player.whereToDraw.top));
+            Log.e("---------", String.valueOf(player.whereToDraw.left));
 
+
+
+            paint.setStyle(Paint.Style.STROKE);
             canvas.drawRect(player.getHitbox(), paint);
 
             // Draw Enemy Ninjas
@@ -140,7 +148,7 @@ public class GameView extends SurfaceView implements Runnable {
                 canvas.drawBitmap(enemy.getBitmap(), enemy.frameToDraw, enemy.whereToDraw, null);
             }
 
-            // Draw Enemy Ninjas
+            // Draw Friendly Ninjas
             for (FriendlyNinja friend : friendlyNinjas) {
                 friend.whereToDraw.set((int) friend.manXPos, (int) friend.manYPos,
                         (int) friend.manXPos + friend.frameWidth, (int) friend.manYPos + friend.frameHeight);
@@ -170,11 +178,6 @@ public class GameView extends SurfaceView implements Runnable {
                 paint.setTextAlign(Paint.Align.RIGHT);
                 canvas.drawText("Speed: " + player.speed * 60 + " MPS", screenWidth - 10, screenHeight - yy, paint);
 
-                /** Draw the Pause Button **/
-                canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.pause),
-                        screenWidth - 120, 0, paint);
-
-
                 if (gamePaused) {
                     canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.play),
                             screenWidth - 120, 0, paint);
@@ -182,7 +185,13 @@ public class GameView extends SurfaceView implements Runnable {
                     canvas.drawText("Game Paused", screenWidth * 2 / 3, screenHeight / 2, paint);
                     canvas.drawText("Tap to Resume", screenWidth * 2 / 3, screenHeight / 2 + 100, paint);
                 }
-            } else {
+                else {
+                /** Draw the Pause Button **/
+                    canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.pause),
+                            screenWidth - 120, 0, paint);
+                }
+            }
+            else {
                 /** Draw the Game Over screen **/
                 paint.setTextSize(80);
                 paint.setTextAlign(Paint.Align.CENTER);
@@ -214,12 +223,12 @@ public class GameView extends SurfaceView implements Runnable {
 
         /** Check Collision between Player and enemy ninjas **/
         for (EnemyNinja enemy : enemyNinjas) {
-            if (Rect.intersects(player.getHitbox(), enemy.getHitbox()) && !player.isAttacking) {
+            if (Rect.intersects(player.getHitbox(), enemy.getHitbox())) {
                 enemy.update(fps, gameSpeed);
                 hitDetected = true;
                 enemy.setX(-enemy.width());
             }
-            else if (Rect.intersects(player.getHitbox(), enemy.getHitbox()) && player.isAttacking) {
+            else if (Rect.intersects(player.getHitbox(), enemy.getHitbox())) {
                 enemy.setX(screenWidth);
                 enemiesDefeated++;
             }
@@ -258,29 +267,33 @@ public class GameView extends SurfaceView implements Runnable {
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getActionMasked()) {
-            case MotionEvent.ACTION_POINTER_DOWN:
+            case MotionEvent.ACTION_DOWN:
                 float x = motionEvent.getX();
                 float y = motionEvent.getY();
+                Log.e("==========", "x: " + x + "// y: " + y);
 
                 /** Check if Pause Button was pressed **/
                 if (x > screenWidth - 140 && y < 140) {
-                    gamePaused = true;
-                    pause();
-                }
-                if (gamePaused) {
-                    if (x > screenWidth - 140 && y < 140) {
+                    if (gamePaused) {
                         gamePaused = false;
+                        resume();
+                    }
+                    else {
+                        gamePaused = true;
+                        pause();
                     }
                 }
 
                 /** Tap left side of screen to jump **/
                 if (x < screenWidth / 2 && y > 140 && !player.isJumping) {
-                    player.jump();
+                    //TODO: Add Player Jump Logic
+                    //player.jump
                 }
 
                 /** Tap right side of screen to attack **/
                 if (x > screenWidth / 2 && y > 140) {
-                    player.attack();
+                    //TODO: Add Attack Logic
+                    //player.attack
                 }
 
                 /** Restart Game **/
