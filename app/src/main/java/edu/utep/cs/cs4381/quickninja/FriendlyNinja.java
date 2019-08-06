@@ -54,7 +54,7 @@ public class FriendlyNinja extends GameObject {
         }
 
         /** Refresh hitbox location **/
-        hitBox.set(x, y, x + frameWidth, y + frameHeight);
+        whereToDraw.roundOut(hitBox);
 
     }
 

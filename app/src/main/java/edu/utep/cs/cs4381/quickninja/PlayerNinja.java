@@ -39,7 +39,7 @@ public class PlayerNinja extends GameObject{
         }
 
         /** Refresh hitbox location **/
-        hitBox = frameToDraw;
+        hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
     }
 
 
@@ -78,7 +78,7 @@ public class PlayerNinja extends GameObject{
             y = maxY;
         }
 
-        hitBox.set(x, y, x +frameWidth, y + frameHeight);
+        whereToDraw.roundOut(hitBox);
 
     }
 

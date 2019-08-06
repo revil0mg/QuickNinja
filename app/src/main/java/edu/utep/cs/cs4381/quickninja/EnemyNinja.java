@@ -51,13 +51,13 @@ public class EnemyNinja extends GameObject {
 
         /** Respawn when off screen **/
         if (x < minX - bitmap.getWidth()) {
-            speed = random.nextInt(10)+10;
+            speed = random.nextInt(10)+15;
             x = maxX;
             y = maxY - bitmap.getHeight();
         }
 
         /** Refresh hitbox location **/
-        hitBox.set(x, y, x + frameWidth, y + frameHeight);
+        whereToDraw.roundOut(hitBox);
 
     }
     

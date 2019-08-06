@@ -130,6 +130,8 @@ public class GameView extends SurfaceView implements Runnable {
             player.manageCurrentFrame();
             canvas.drawBitmap(player.getBitmap(), player.frameToDraw, player.whereToDraw, null);
 
+            canvas.drawRect(player.getHitbox(), paint);
+
             // Draw Enemy Ninjas
             for (EnemyNinja enemy : enemyNinjas) {
                 enemy.whereToDraw.set((int) enemy.manXPos, (int) enemy.manYPos,
