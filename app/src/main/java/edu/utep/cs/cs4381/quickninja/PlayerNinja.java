@@ -7,9 +7,8 @@ import android.graphics.Rect;
 public class PlayerNinja extends GameObject{
     private static final int GRAVITY = -12;
 
-    private int shieldStrength;
-    public boolean isFalling;
-    private boolean isJumping;
+    protected boolean isFalling;
+    protected boolean isJumping;
     private long jumpTime;
     private long maxJumpTime = 700; // jump 7 10ths of second
     protected int speed;
@@ -42,6 +41,18 @@ public class PlayerNinja extends GameObject{
 
 
     public void update(long fps, float gravity) {
+
+        if (isMoving) {
+            manXPos = manXPos + runSpeedPerSecond / fps;
+            if (manXPos > bitmap.getWidth()) {
+                manYPos += frameHeight;
+                manXPos = 10;
+            }
+            if (manYPos + frameHeight > bitmap.getHeight()) {
+                manYPos = 10;
+            }
+        }
+
         if (isJumping) {
             long timeJumping = System.currentTimeMillis() - jumpTime;
             if (timeJumping < maxJumpTime) {
@@ -68,4 +79,5 @@ public class PlayerNinja extends GameObject{
         hitBox.set(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
 
     }
+
 }

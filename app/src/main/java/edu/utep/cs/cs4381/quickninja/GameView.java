@@ -25,6 +25,7 @@ public class GameView extends SurfaceView implements Runnable {
     private long startFrameTime;
     private long timeThisFrame;
     private long fps;
+    private int gameSpeed;
 
     Context context;
     int screenWidth;
@@ -52,6 +53,8 @@ public class GameView extends SurfaceView implements Runnable {
         holder = getHolder();
         paint = new Paint();
         this.context = context;
+
+        gameSpeed = 13;
 
         screenWidth = screenX;
         screenHeight = screenY;
@@ -102,42 +105,6 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-        switch (motionEvent.getActionMasked()) {
-            case MotionEvent.ACTION_POINTER_DOWN:
-                float x = motionEvent.getX();
-                float y = motionEvent.getY();
-
-                /** Check if Pause Button was pressed **/
-                if (x > screenWidth - 140 && y < 140) {
-                    gamePaused = true;
-                    pause();
-                }
-                if (gamePaused) {
-                    if (x > screenWidth - 140 && y < 140) {
-                        gamePaused = false;
-                    }
-                }
-
-                /** Tap left side of screen to jump **/
-                if (x < screenWidth / 2 && y > 140) {
-
-                }
-
-                /** Tap right side of screen to attack **/
-                if (x > screenWidth / 2 && y > 140) {
-
-                }
-
-                /** Restart Game **/
-                if (gameEnded) {
-                    startGame();
-                }
-                break;
-        }
-        return true;
-    }
 
     private void draw () {
         if (holder.getSurface().isValid()) {
@@ -149,7 +116,7 @@ public class GameView extends SurfaceView implements Runnable {
             canvas.drawBitmap(gameBackground,0,0, paint);
 
             // Draw platform
-            paint.setColor(Color.RED);
+            paint.setColor(Color.WHITE);
             paint.setStyle(Paint.Style.FILL);
             paint.setAlpha(150); // Adjust transparency
             // You can change the second parameter of drawRect *(screenHeight/2)+(screenWidth/4)* to adjust the height of the platform.
@@ -158,13 +125,14 @@ public class GameView extends SurfaceView implements Runnable {
 
             /** Draw the Game Objects **/
             //canvas.drawColor(Color.argb(255, 0, 0, 0));
-            canvas.drawBitmap(
-                    player.getBitmap(),
-                    player.getX(), player.getY(), paint);
+            player.whereToDraw.set((int) player.manXPos, (int) player.manYPos,
+                    (int) player.manXPos + player.frameWidth, (int) player.manYPos + player.frameHeight);
+            player.manageCurrentFrame();
+            canvas.drawBitmap(player.getBitmap(), player.frameToDraw, player.whereToDraw, null);
 
-//            for (EnemyShip enemy : enemyShips) {
-//                canvas.drawBitmap(enemy.getBitmap(), enemy.getX(), enemy.getY(), paint);
-//            }
+            for (EnemyNinja enemy : enemyNinjas) {
+                canvas.drawBitmap(enemy.getBitmap(), enemy.getX(), enemy.getY(), paint);
+            }
 //
 //            for (SpaceDust sd : dusts) {
 //                canvas.drawPoint(sd.getX(), sd.getY(), paint);
@@ -230,28 +198,25 @@ public class GameView extends SurfaceView implements Runnable {
         boolean friendlyHitDetected = false;
 
 
-//        for (EnemyShip ship : enemyShips) {
-//            if (Rect.intersects(player.getHitbox(), ship.getHitbox())) {
-//                ship.update(player.getSpeed());
-//                hitDetected = true;
-//                ship.setX(-ship.width());
-//            }
-//        }
-//
-//        if (hitDetected) {
-//            soundEffect.play(SoundEffect.Sound.BUMP);
-//            if (player.reduceShieldStrength() < 0) {
-//                gameEnded = true;
-//            }
-//        }
+        /** Check Collision between Player and enemy ninjas **/
+        for (EnemyNinja enemy : enemyNinjas) {
+            if (Rect.intersects(player.getHitbox(), enemy.getHitbox())) {
+                //ship.update(player.getSpeed());
+                hitDetected = true;
+                //ship.setX(-ship.width());
+            }
+        }
 
+        if (hitDetected) {
+            //soundEffect.play(SoundEffect.Sound.BUMP);
+            gameEnded = true;
+        }
 
+        player.update(fps, gameSpeed);
 
-        player.update(fps, 6);
-
-//        for (EnemyShip enemy : enemyShips) {
-//            enemy.update(player.getSpeed());
-//        }
+        for (EnemyNinja enemy : enemyNinjas) {
+            enemy.update(gameSpeed);
+        }
 
 //        for (SpaceDust sd : dusts) {
 //            sd.update(player.getSpeed());
@@ -278,7 +243,42 @@ public class GameView extends SurfaceView implements Runnable {
 
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        switch (motionEvent.getActionMasked()) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+                float x = motionEvent.getX();
+                float y = motionEvent.getY();
 
+                /** Check if Pause Button was pressed **/
+                if (x > screenWidth - 140 && y < 140) {
+                    gamePaused = true;
+                    pause();
+                }
+                if (gamePaused) {
+                    if (x > screenWidth - 140 && y < 140) {
+                        gamePaused = false;
+                    }
+                }
+
+                /** Tap left side of screen to jump **/
+                if (x < screenWidth / 2 && y > 140 && !player.isJumping) {
+
+                }
+
+                /** Tap right side of screen to attack **/
+                if (x > screenWidth / 2 && y > 140) {
+
+                }
+
+                /** Restart Game **/
+                if (gameEnded) {
+                    startGame();
+                }
+                break;
+        }
+        return true;
+    }
 
     private String formatTime(String label, long time) { // time in milliseconds
         return String.format("%s: %d.%03ds", label, time / 1000, time % 1000);
