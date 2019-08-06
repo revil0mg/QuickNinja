@@ -47,12 +47,15 @@ public abstract class GameObject {
 
     public Bitmap getBitmap() {  return bitmap; }
 
-    public void setBitmap(Context ctx, int id) {
+    public void setBitmap(Context ctx, int id, boolean reset) {
         bitmap = BitmapFactory.decodeResource(
                 ctx.getResources(), id);
-        bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
-
+        if (!reset)
+            bitmap = Bitmap.createScaledBitmap(bitmap, 400, 300, false);
+        else
+            bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
     }
+
 
     public Rect getHitbox() { return hitBox; }
 

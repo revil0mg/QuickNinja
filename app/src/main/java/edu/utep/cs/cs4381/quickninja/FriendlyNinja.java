@@ -22,9 +22,8 @@ public class FriendlyNinja extends GameObject {
 
         maxX = screenX;
         maxY = screenY / 2;
-        minX = 0;
         speed = random.nextInt(10) + 10;
-        x = screenX;
+        x = screenX / 2;
         y = maxY;
         hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
 

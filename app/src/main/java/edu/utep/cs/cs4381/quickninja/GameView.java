@@ -1,6 +1,7 @@
 package edu.utep.cs.cs4381.quickninja;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,14 +35,12 @@ public class GameView extends SurfaceView implements Runnable {
     int screenHeight;
 
     private boolean playing;
-    private boolean gameEnded;
     boolean gamePaused = false;
 
     private PlayerNinja player;
     private EnemyNinja enemyNinja;
     private FriendlyNinja friendlyNinja;
 
-    private int enemiesDefeated;
     private int timeTaken;
 
     SoundEffect soundEffect;
@@ -59,6 +58,8 @@ public class GameView extends SurfaceView implements Runnable {
     private long lastFrameChangeTime = 0;
     private int frameLengthInMillisecond = 13;
 
+    private boolean gameOver;
+
     private Rect frameToDraw = new Rect(0, 0, frameWidth, frameHeight);
     private RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, frameHeight);
     private int score;
@@ -69,7 +70,7 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
         this.context = context;
 
-        gameSpeed = 60;
+        gameSpeed = 30;
 
         screenWidth = screenX;
         screenHeight = screenY;
@@ -88,6 +89,13 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void startGame () {
         /** Initialize Game Objects **/
+        if (gameOver) {
+            Intent i = new Intent(context, GameOverActivity.class);
+            i.putExtra("score", score);
+            i.putExtra("hiScore", hiScore);
+            context.startActivity(i);
+            gameOver = false;
+        }
         player = new PlayerNinja(context, screenWidth, screenHeight);
 
         playerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.player_run);
@@ -96,19 +104,18 @@ public class GameView extends SurfaceView implements Runnable {
         enemyNinja = new EnemyNinja(context, screenWidth, screenHeight);
         friendlyNinja = new FriendlyNinja(context, screenWidth, screenHeight);
 
+
 //        dusts.clear();
 //        for (int i = 0; i < 40; i++) {
 //            dusts.add(new SpaceDust(screenWidth, screenHeight));
 //        }
 
-        /** Reset Time and Score **/
-        enemiesDefeated = 0;
+        /** Reset Score **/
         timeTaken = 0;
         score = 0;
 
 //
 //        timeStarted = System.currentTimeMillis();
-        gameEnded = false;
         gamePaused = false;
     }
 
@@ -131,19 +138,21 @@ public class GameView extends SurfaceView implements Runnable {
         if (holder.getSurface().isValid()) {
             canvas = holder.lockCanvas();
 
+
             // Draw background image
             Bitmap gameBackground = BitmapFactory.decodeResource(getResources(), R.drawable.game_background);
-            gameBackground = Bitmap.createScaledBitmap(gameBackground,screenWidth,(screenHeight / 2) + (screenWidth / 4),true);
-            canvas.drawBitmap(gameBackground,0,0, paint);
+            gameBackground = Bitmap.createScaledBitmap(gameBackground, screenWidth, (screenHeight / 2) + (screenWidth / 4), true);
+            canvas.drawBitmap(gameBackground, 0, 0, paint);
 
             // Draw platform
-            paint.setColor(Color.WHITE);
+
+            paint.setColor(Color.RED);
             paint.setStyle(Paint.Style.FILL);
             paint.setAlpha(150); // Adjust transparency
             // You can change the second parameter of drawRect *(screenHeight/2)+(screenWidth/4)* to adjust the height of the platform.
             canvas.drawRect(0, (screenHeight / 2) + (screenWidth / 4), screenWidth, screenHeight, paint);
             paint.setAlpha(255); // Reset transparency
-
+            paint.setColor(Color.WHITE);
             /** Draw the Game Objects **/
             // Animate Player
 //            player.whereToDraw.set((int) player.manXPos, (int) player.manYPos,
@@ -158,12 +167,14 @@ public class GameView extends SurfaceView implements Runnable {
             canvas.drawBitmap(player.getBitmap(), player.x, player.y, paint);
 
 
-            paint.setStyle(Paint.Style.STROKE);
-            canvas.drawRect(player.getHitbox(), paint);
+            paint.setStyle(Paint.Style.FILL);
+            //canvas.drawRect(player.getHitbox(), paint);
 
             // Draw Enemy Ninjas
             canvas.drawBitmap(enemyNinja.getBitmap(), enemyNinja.x, enemyNinja.y, paint);
             canvas.drawBitmap(friendlyNinja.getBitmap(), friendlyNinja.x, friendlyNinja.y, paint);
+
+            canvas.drawRect(player.attackHitbox, paint);
 //            for (EnemyNinja enemy : enemyNinjas) {
 //                enemy.whereToDraw.set((int) enemy.manXPos, (int) enemy.manYPos,
 //                        (int) enemy.manXPos + enemy.frameWidth, (int) enemy.manYPos + enemy.frameHeight);
@@ -185,100 +196,92 @@ public class GameView extends SurfaceView implements Runnable {
 //
 //            canvas.drawBitmap(friendShip.getBitmap(), friendShip.getX(), friendShip.getY(), paint);
 
-            if (!gameEnded) {
-                /** Draw the HUD **/
-                paint.setStrokeWidth(4);
-                paint.setTextSize(48);
 
-                int yy = 50;
-                paint.setTextAlign(Paint.Align.LEFT);
-                canvas.drawText(formatTime("Score", score), 10, yy, paint);
+            /** Draw the HUD **/
+            paint.setStrokeWidth(4);
+            paint.setTextSize(48);
 
+            int yy = 50;
+            paint.setTextAlign(Paint.Align.LEFT);
+            canvas.drawText("Score: " + score, 10, yy, paint);
+
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("HighScore: " + hiScore, screenWidth / 2, yy, paint);
+
+
+            if (gameOver) {
+                paint.setTextSize(100);
                 paint.setTextAlign(Paint.Align.CENTER);
-                canvas.drawText(formatTime("HighScore", hiScore), screenWidth / 2, yy, paint);
-                canvas.drawText("Distance: " + enemiesDefeated / 1000 + " KM", screenWidth / 2, screenHeight - yy, paint);
+                canvas.drawText("Game Over!", screenWidth / 2, screenHeight / 2, paint);
+                canvas.drawText("Tap to View Results!", screenWidth / 2, screenHeight / 2 + 100, paint);
+            }
 
-                paint.setTextAlign(Paint.Align.RIGHT);
-                canvas.drawText("Speed: " + player.speed * 60 + " MPS", screenWidth - 10, screenHeight - yy, paint);
-
-                if (gamePaused) {
-                    canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.play),
-                            screenWidth - 120, 0, paint);
-                    paint.setTextSize(100);
-                    canvas.drawText("Game Paused", screenWidth * 2 / 3, screenHeight / 2, paint);
-                    canvas.drawText("Tap to Resume", screenWidth * 2 / 3, screenHeight / 2 + 100, paint);
-                }
-                else {
-                /** Draw the Pause Button **/
-                    canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.pause),
-                            screenWidth - 120, 0, paint);
-                }
+            if (gamePaused) {
+                canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.play),
+                        screenWidth - 120, 0, paint);
+                paint.setTextSize(100);
+                paint.setTextAlign(Paint.Align.CENTER);
+                canvas.drawText("Game Paused", screenWidth / 2, screenHeight / 2, paint);
+                canvas.drawText("Tap Play to Resume", screenWidth / 2, screenHeight / 2 + 100, paint);
             }
             else {
-                /** Draw the Game Over screen **/
-                paint.setTextSize(80);
-                paint.setTextAlign(Paint.Align.CENTER);
-                canvas.drawText("Game Over", screenWidth / 2, 120, paint);
-                paint.setTextSize(25);
-                //canvas.drawText("Fastest:"+ fastestTime + "s", screenX/2, 160, paint);
-                canvas.drawText(formatTime("Farthest", hiScore) + "s", screenWidth / 2, 180, paint);
-                //canvas.drawText("Time:" + timeTaken + "s", screenX / 2, 200, paint);
-                canvas.drawText(formatTime("Time", timeTaken) + "s", screenWidth / 2, 220, paint);
-                canvas.drawText("Enemies Defeated:" + enemiesDefeated / 1000 + " KM", screenWidth / 2, 260, paint);
-                paint.setTextSize(80);
-                canvas.drawText("Tap to replay!", screenWidth / 2, 370, paint);
+                /** Draw the Pause Button **/
+                canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.pause),
+                        screenWidth - 120, 0, paint);
             }
 
             holder.unlockCanvasAndPost(canvas);
 
         }
-
     }
-
 
     private void update () {
         if (gamePaused) {
             return;
         }
         boolean hitDetected = false;
-        boolean friendlyHitDetected = false;
 
 
         /** Check Collision between Player and enemy ninjas **/
         if (Rect.intersects(player.getHitbox(), enemyNinja.getHitbox())) {
+            soundEffect.play(SoundEffect.Sound.BUMP);
             enemyNinja.update(fps, gameSpeed);
             hitDetected = true;
-            enemyNinja.setBitmap(context, R.drawable.enemy_single_swing);
-        }
-        else if (Rect.intersects(player.getHitbox(), enemyNinja.getHitbox())) {
-            enemyNinja.setX(screenWidth);
-            enemiesDefeated++;
-        }
-
-        /** Check Collision between Player and friendly  ninjas **/
-        if ((Rect.intersects(player.getHitbox(), friendlyNinja.getHitbox()))) {
-            hitDetected = true;
-            //friendLyNinja.setBitmap(context, R.drawable.enemy_swing);
+            gameOver = true;
+            enemyNinja.setBitmap(context, R.drawable.enemy_single_swing, false);
         }
 
         /** Check Collision between Player Sword and Enemy Ninjas **/
         if ((Rect.intersects(player.getAttackHitbox(), enemyNinja.getHitbox()))) {
+            soundEffect.play(SoundEffect.Sound.BUMP);
+            enemyNinja.update(fps, gameSpeed);
             score++;
             enemyNinja.setX(screenWidth);
-            //friendLyNinja.setBitmap(context, R.drawable.enemy_swing);
         }
 
-        if (hitDetected && !gameEnded) {
-            soundEffect.play(SoundEffect.Sound.BUMP);
-            gameEnded = true;
-            player.setBitmap(context, R.drawable.player_single_hit);
+        /** Check Collision between Player Sword and Friendly Ninjas **/
+        if ((Rect.intersects(player.getAttackHitbox(), friendlyNinja.getHitbox()))) {
+            friendlyNinja.update(fps, gameSpeed);
+            hitDetected = true;
+            friendlyNinja.setX(screenWidth);
+            friendlyNinja.setBitmap(context, R.drawable.friendly_single_hit, false);
+        }
+
+        if (hitDetected) {
+            player.bitmap = BitmapFactory.decodeResource(
+                    context.getResources(), R.drawable.player_single_hit);
+            player.bitmap = Bitmap.createScaledBitmap(player.bitmap, 300, 220, false);
+            player.y += 500;
+
             enemyNinja.setSpeed(0);
             gameSpeed = 0;
-            if (enemiesDefeated > hiScore) {
-                editor.putLong("hiScore", enemiesDefeated);
+            if (score > hiScore) {
+                editor.putLong("hiScore", score);
                 editor.commit();
-                hiScore = enemiesDefeated;
+                hiScore = score;
             }
+            gameOver = true;
+
         }
 
         player.update(fps, gameSpeed);
@@ -325,28 +328,20 @@ public class GameView extends SurfaceView implements Runnable {
 
                 /** Tap left side of screen to jump **/
                 if (x <= screenWidth / 2 && y > 140) {
-                    //TODO: Add Player Jump Logic
                     player.jump();
                 }
 
                 /** Tap right side of screen to attack **/
                 if (x >= screenWidth / 2 && y > 140) {
-                    //TODO: Add Attack Logic
-                    soundEffect.play(SoundEffect.Sound.BUMP);
                     player.attack(context);
                 }
 
-                /** Restart Game **/
-                if (gameEnded) {
+                if (gameOver)
                     startGame();
-                }
+
                 break;
         }
         return true;
-    }
-
-    private String formatTime(String label, long time) { // time in milliseconds
-        return String.format("%s: %d.%03ds", label, time / 1000, time % 1000);
     }
 
     private void control(){

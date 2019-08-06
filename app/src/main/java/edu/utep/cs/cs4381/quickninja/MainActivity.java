@@ -25,14 +25,7 @@ public class MainActivity extends AppCompatActivity {
         //SharedPreferences.Editor editor;
         prefs = getSharedPreferences("HiScores", MODE_PRIVATE);
 
-        // Load fastest time
-        // if not available our high score = 1000000
-        long farthestReached = prefs.getLong("hiScore", 0);
 
-        // Get a reference to the TextView in our layout
-        TextView textFastestTime = findViewById(R.id.textHiScore);
-        // Put the high score in our TextView
-        textFastestTime.setText("Farthest Reached: " + farthestReached);
     }
 
     @Override

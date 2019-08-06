@@ -3,11 +3,9 @@ package edu.utep.cs.cs4381.quickninja;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Movie;
 import android.graphics.Rect;
 import android.util.Log;
 
-import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -105,6 +103,10 @@ public class PlayerNinja extends GameObject{
             y = maxY;
         }
 
+        if (isAttacking) {
+            attackHitbox = new Rect(x + bitmap.getWidth() - 50, y, x + bitmap.getWidth() + 200, y + bitmap.getHeight());
+            isAttacking = false;
+        }
         hitBox = new Rect(x, y, x + bitmap.getWidth() - 10, y + bitmap.getWidth());
 //        whereToDraw.roundOut(hitBox);
 
@@ -120,23 +122,15 @@ public class PlayerNinja extends GameObject{
 
     public void attack(Context ctx) {
         isAttacking = true;
-        bitmap = BitmapFactory.decodeResource(
-                ctx.getResources(), R.drawable.player_single_attack);
-        attackHitbox = new Rect(x + bitmap.getWidth() - 10, y, x + 120, y + bitmap.getHeight());
+        setBitmap(ctx, R.drawable.player_single_attack, false);
         bitmap = Bitmap.createScaledBitmap(bitmap, 400, 350, false);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                sheatheSword(ctx);
+                setBitmap(ctx, R.drawable.player_single, true);
                 Log.e("==============++", "Sword Sheathed");
             }
         }, 1000); // 1 seconds
-    }
-
-    private void sheatheSword(Context ctx) {
-        bitmap = BitmapFactory.decodeResource(
-                ctx.getResources(), R.drawable.player_single);
-        bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
     }
 
     public Rect getAttackHitbox() {
