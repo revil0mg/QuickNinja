@@ -102,12 +102,62 @@ public class GameView extends SurfaceView implements Runnable {
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        switch (motionEvent.getActionMasked()) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+                float x = motionEvent.getX();
+                float y = motionEvent.getY();
+
+                /** Check if Pause Button was pressed **/
+                if (x > screenWidth - 140 && y < 140) {
+                    gamePaused = true;
+                    pause();
+                }
+                if (gamePaused) {
+                    if (x > screenWidth - 140 && y < 140) {
+                        gamePaused = false;
+                    }
+                }
+
+                /** Tap left side of screen to jump **/
+                if (x < screenWidth / 2 && y > 140) {
+
+                }
+
+                /** Tap right side of screen to attack **/
+                if (x > screenWidth / 2 && y > 140) {
+
+                }
+
+                /** Restart Game **/
+                if (gameEnded) {
+                    startGame();
+                }
+                break;
+        }
+        return true;
+    }
+
     private void draw () {
         if (holder.getSurface().isValid()) {
             canvas = holder.lockCanvas();
 
+            // Draw background image
+            Bitmap gameBackground = BitmapFactory.decodeResource(getResources(), R.drawable.game_background);
+            gameBackground = Bitmap.createScaledBitmap(gameBackground,screenWidth,(screenHeight / 2) + (screenWidth / 4),true);
+            canvas.drawBitmap(gameBackground,0,0, paint);
+
+            // Draw platform
+            paint.setColor(Color.RED);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setAlpha(150); // Adjust transparency
+            // You can change the second parameter of drawRect *(screenHeight/2)+(screenWidth/4)* to adjust the height of the platform.
+            canvas.drawRect(0, (screenHeight / 2) + (screenWidth / 4), screenWidth, screenHeight, paint);
+            paint.setAlpha(255); // Reset transparency
+
             /** Draw the Game Objects **/
-            canvas.drawColor(Color.argb(255, 0, 0, 0));
+            //canvas.drawColor(Color.argb(255, 0, 0, 0));
             canvas.drawBitmap(
                     player.getBitmap(),
                     player.getX(), player.getY(), paint);
@@ -124,7 +174,6 @@ public class GameView extends SurfaceView implements Runnable {
 
             if (!gameEnded) {
                 /** Draw the HUD **/
-                paint.setColor(Color.argb(255, 255, 255, 255));
                 paint.setStrokeWidth(4);
                 paint.setTextSize(48);
 
@@ -140,12 +189,13 @@ public class GameView extends SurfaceView implements Runnable {
                 canvas.drawText("Speed: " + player.speed * 60 + " MPS", screenWidth - 10, screenHeight - yy, paint);
 
                 /** Draw the Pause Button **/
-                paint.setColor(Color.RED);
-                canvas.drawCircle(screenWidth - 70, 35, 35, paint);
-                paint.setColor(Color.WHITE);
-                canvas.drawText("P", screenWidth - 55, 50, paint);
+                canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.pause),
+                        screenWidth - 120, 0, paint);
+
 
                 if (gamePaused) {
+                    canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.play),
+                            screenWidth - 120, 0, paint);
                     paint.setTextSize(100);
                     canvas.drawText("Game Paused", screenWidth * 2 / 3, screenHeight / 2, paint);
                     canvas.drawText("Tap to Resume", screenWidth * 2 / 3, screenHeight / 2 + 100, paint);
