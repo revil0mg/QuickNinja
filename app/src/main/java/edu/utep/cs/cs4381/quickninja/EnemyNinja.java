@@ -17,7 +17,8 @@ public class EnemyNinja extends GameObject {
     public EnemyNinja(Context ctx, int screenX, int screenY){
         super();
         // TODO: Add enemy ninja graphic
-        //bitmap = scaleBitmap(BitmapFactory.decodeResource(ctx.getResources(), R.id.enemyNinja), screenX );
+        bitmap = BitmapFactory.decodeResource(
+                ctx.getResources(), R.drawable.player_run);
         maxX = screenX;
         maxY = screenY;
         minX = 0;

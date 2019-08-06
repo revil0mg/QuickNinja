@@ -13,6 +13,10 @@ public abstract class GameObject {
     protected Bitmap bitmap;
     protected Rect hitBox;
 
+    private Animation anim = null;
+    private boolean animated = false;
+    private int animFps = 1;
+
     public GameObject() {
         //minY = 0;
     }

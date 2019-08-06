@@ -4,7 +4,8 @@ import android.content.Context;
 import android.media.SoundPool;
 
 public class SoundEffect {
-    public enum Sound {;
+    public enum Sound {
+        SHOOT(R.raw.shoot);
 //        START(R.raw.start),
 //        BUMP(R.raw.bump),
 //        DESTROYED(R.raw.destroyed),

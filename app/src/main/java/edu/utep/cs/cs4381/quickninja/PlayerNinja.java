@@ -12,18 +12,29 @@ public class PlayerNinja extends GameObject{
     private boolean isJumping;
     private long jumpTime;
     private long maxJumpTime = 700; // jump 7 10ths of second
-    private int speed;
+    protected int speed;
 
     public PlayerNinja(Context context, int screenX, int screenY) {
         super();
+
+        bitmap = BitmapFactory.decodeResource(
+                context.getResources(), R.drawable.player_run);
+
         x = 50;
         y = screenY / 2 - bitmap.getHeight();
 
         speed = 1;
-        bitmap = BitmapFactory.decodeResource(
-                context.getResources(), R.drawable.player_run);
+
 
         maxY = screenY - bitmap.getHeight(); // Q: why?
+
+        // Set this object up to be animated
+        final int ANIMATION_FPS = 16;
+        final int ANIMATION_FRAME_COUNT = 5;
+
+//        setAnimFps(ANIMATION_FPS);
+//        setAnimFrameCount(ANIMATION_FRAME_COUNT);
+//        setAnimated(context, pixelsPerMeter, true);
 
         /** Refresh hitbox location **/
         hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
